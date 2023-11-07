@@ -11,6 +11,7 @@ use Slim\Routing\RouteCollectorProxy;
 require __DIR__ . '/../vendor/autoload.php';
 require_once "./controllers/UsuarioController.php";
 require_once "./controllers/ProductoController.php";
+require_once "./controllers/MesaController.php";
 require_once './db/AccesoDatos.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
@@ -33,13 +34,17 @@ $app->get('[/]', function (Request $request, Response $response) {
     return $response->withHeader('Content-Type', 'application/json');
 });
 
-$app->post('/usuarios', \UsuarioController::class . ':CargarUno');
+$app->post('/usuarios/crear', \UsuarioController::class . ':CargarUno');
 
 $app->get('/usuarios/mostrar', \UsuarioController::class . ':TraerTodos');
 
 $app->post('/productos/crear', \ProductoController::class .':CargarUno');
 
-$app->post('/productos/mostrar', \ProductoController::class .':TraerTodos');
+$app->get('/productos/mostrar', \ProductoController::class .':TraerTodos');
+
+$app->post('/mesas/crear', \MesaController::class .':CargarUno');
+
+$app->get('/mesas/mostrar', \MesaController::class .':TraerTodos');
 
 
 $app->get('/test', function (Request $request, Response $response) {
