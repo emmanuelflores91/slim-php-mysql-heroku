@@ -5,24 +5,20 @@ ini_set('display_errors', 1);
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Server\RequestHandlerInterface;
 use Slim\Factory\AppFactory;
 use Slim\Routing\RouteCollectorProxy;
-use Slim\Routing\RouteContext;
 
 require __DIR__ . '/../vendor/autoload.php';
-
+require_once "./controllers/UsuarioController.php";
+require_once "./controllers/ProductoController.php";
 require_once './db/AccesoDatos.php';
-// require_once './middlewares/Logger.php';
 
-require_once './controllers/UsuarioController.php';
-
-// Load ENV
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->safeLoad();
-
 // Instantiate App
 $app = AppFactory::create();
+
+$app->setBasePath('/slim-php-deployment/app'); 
 
 // Add error middleware
 $app->addErrorMiddleware(true, true, true);
@@ -31,15 +27,35 @@ $app->addErrorMiddleware(true, true, true);
 $app->addBodyParsingMiddleware();
 
 // Routes
-$app->group('/usuarios', function (RouteCollectorProxy $group) {
-    $group->get('[/]', \UsuarioController::class . ':TraerTodos');
-    $group->get('/{usuario}', \UsuarioController::class . ':TraerUno');
-    $group->post('[/]', \UsuarioController::class . ':CargarUno');
-  });
+$app->get('[/]', function (Request $request, Response $response) {
+    $payload = json_encode(array('method' => 'GET', 'msg' => "Bienvenido a SlimFramework 2028"));
+    $response->getBody()->write($payload);
+    return $response->withHeader('Content-Type', 'application/json');
+});
 
-$app->get('[/]', function (Request $request, Response $response) {    
-    $payload = json_encode(array("mensaje" => "Slim Framework 4 PHP"));
-    
+$app->post('/usuarios', \UsuarioController::class . ':CargarUno');
+
+$app->get('/usuarios/mostrar', \UsuarioController::class . ':TraerTodos');
+
+$app->post('/productos/crear', \ProductoController::class .':CargarUno');
+
+$app->post('/productos/mostrar', \ProductoController::class .':TraerTodos');
+
+
+$app->get('/test', function (Request $request, Response $response) {
+    $payload = json_encode(array('method' => 'GET', 'msg' => "test"));
+    $response->getBody()->write($payload);
+    return $response->withHeader('Content-Type', 'application/json');
+});
+
+$app->post('[/]', function (Request $request, Response $response) {
+    $payload = json_encode(array('method' => 'POST', 'msg' => "Bienvenido a SlimFramework 2023"));
+    $response->getBody()->write($payload);
+    return $response->withHeader('Content-Type', 'application/json');
+});
+
+$app->post('/test', function (Request $request, Response $response) {
+    $payload = json_encode(array('method' => 'POST', 'msg' => "Bienvenido a SlimFramework 2023"));
     $response->getBody()->write($payload);
     return $response->withHeader('Content-Type', 'application/json');
 });
